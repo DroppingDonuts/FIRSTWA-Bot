@@ -80,17 +80,17 @@ namespace VolunteerBot
             }
             catch (OperationCanceledException)
             {
-                await context.PostAsync("You canceled the form!");
+                await context.PostAsync("Your response was canceled. If you'd like more information, reply what you'd like to learn about.");
                 return;
 
             }
             if (form != null)
             {
-                await context.PostAsync("Form received filled!");
+                await context.PostAsync("Thank you for giving us your information. If you'd like more information, reply what you'd like to learn about.");
             }
             else 
             {
-                await context.PostAsync("Form returned empty response!");
+                await context.PostAsync("The form returned empty response!");
             }
 
             context.Wait(MessageReceived);
@@ -100,7 +100,8 @@ namespace VolunteerBot
         [LuisIntent("GetSignUpInformation")]
         public async Task GetSignUpInformation(IDialogContext context, LuisResult result)
         {
-            //string message = $"I think you wanted to learn about FIRST Washington's sign-up process when you said: " + result.Query;
+            string message = $"I can help you learn more about volunteering. I'm going to be asking you a few quick questions.";
+            await context.PostAsync(message);
             var volunteerForm = new FormDialog<VolunteerFormFlow>(new VolunteerFormFlow(), this.MakeVolunteerForm, FormOptions.PromptInStart);
             context.Call<VolunteerFormFlow>(volunteerForm, VolunteerFormComplete);
         }
