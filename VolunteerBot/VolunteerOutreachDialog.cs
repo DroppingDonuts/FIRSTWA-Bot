@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
 using System.Net.Http;
@@ -58,12 +59,18 @@ namespace VolunteerBot
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
-        
+
+        internal static IDialog<VolunteerFormFlow> MakeRootDialog()
+        {
+            return Chain.From(() => FormDialog.FromForm(VolunteerFormFlow.BuildForm));
+        }
+
         [LuisIntent("GetSignUpInformation")]
         public async Task GetSignUpInformation(IDialogContext context, LuisResult result)
         {
             string message = $"I think you wanted to learn about FIRST Washington's sign-up process when you said: " + result.Query;
-            await context.PostAsync(message);
+            //await context.PostAsync(message);
+            MakeRootDialog().PostToUser();
             context.Wait(MessageReceived);
         }
     }
