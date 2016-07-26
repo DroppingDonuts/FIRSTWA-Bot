@@ -73,12 +73,30 @@ namespace VolunteerBot
             context.Wait(MessageReceived);
         }
 
+        //enum ChoiceOptions {  yes, no, };
+
         [LuisIntent("EndContact")]
         public async Task EndContact(IDialogContext context, LuisResult result)
         {
-            context.UserData.SetValue<bool>("Seen", true);
-            string message = $"I think you wanted me to stop contacting when you said: " + result.Query;
-            await context.PostAsync(message);
+            string response = $"I think you wanted me to stop contacting when you said: " + result.Query + "  Do you want your data removed from our system?";
+            await context.PostAsync(response);
+            PromptDialog.Confirm(context, DeleteContactInformation, response);
+        }
+
+        private async Task DeleteContactInformation(IDialogContext context, IAwaitable<bool> options) {
+            var response = string.Empty;
+            switch (await options)
+            {
+                case true:
+                    response = "Your information has been removed from the FIRST WA system";
+                    break;
+                default:
+                    response = "Your information remains in the FIRST WA system";
+                    break;
+
+            }
+            await context.PostAsync(response);
+
             context.Wait(MessageReceived);
         }
 
