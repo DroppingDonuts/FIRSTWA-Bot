@@ -21,7 +21,6 @@ namespace VolunteerDataWebApi.Models
         public string Name { get; set; }
         public string Email { get; set; }
         public string PostalCode { get; set; }
-        [DefaultValue(true)]
         public bool CanMessage { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

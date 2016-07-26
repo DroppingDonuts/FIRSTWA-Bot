@@ -76,7 +76,6 @@ namespace VolunteerBot
             context.Wait(MessageReceived);
         }
 
-
         private async Task VolunteerFormComplete(IDialogContext context, IAwaitable<VolunteerFormFlow> result)
         {
             VolunteerFormFlow form = null;
@@ -92,7 +91,30 @@ namespace VolunteerBot
             }
             if (form != null)
             {
-                await context.PostAsync("Thank you for giving us your information. If you'd like more information, reply what you'd like to learn about.");
+                string eventStrings = String.Empty;
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(volunteerDataBaseUri);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    Volunteer newVolunteer = new Volunteer();
+                    newVolunteer.Email = form.EmailAddress;
+                    newVolunteer.Name = form.FullName;
+                    newVolunteer.PostalCode = form.ZipCode;
+                    newVolunteer.CanMessage = true;
+
+                    // Get all events between now and the next 90 days
+                    HttpResponseMessage response = await client.PostAsJsonAsync("api/volunteers", newVolunteer);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        await context.PostAsync("Thank you for giving us your information. If you'd like more information, reply what you'd like to learn about.");
+                    }
+                    else
+                    {
+                        await context.PostAsync($"Sorry, we seem to have some problem saving your details right now. Could you try again later? (Error:{response.StatusCode})");
+                    }
+                }
             }
             else 
             {
@@ -100,7 +122,6 @@ namespace VolunteerBot
             }
 
             context.Wait(MessageReceived);
-
         }
 
         [LuisIntent("GetSignUp")]
