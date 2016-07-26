@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
 using System.Net.Http;
@@ -19,9 +20,16 @@ namespace VolunteerBot
     [Serializable]
     public class VolunteerOutreachDialog : LuisDialog<object>
     {
+        private readonly BuildFormDelegate<VolunteerFormFlow> MakeVolunteerForm;
         private readonly string volunteerDataBaseUri;
 
-        public VolunteerOutreachDialog()
+        internal VolunteerOutreachDialog(BuildFormDelegate<VolunteerFormFlow> makeVolunteerForm)
+        { 
+             this.MakeVolunteerForm = makeVolunteerForm; 
+        }
+
+
+    public VolunteerOutreachDialog()
         {
             var rootWebConfig = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~/");
             this.volunteerDataBaseUri = rootWebConfig.AppSettings.Settings["VolunteerDataBaseUri"].Value;
@@ -58,13 +66,41 @@ namespace VolunteerBot
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
-        
-        [LuisIntent("GetSignUp")]
-        public async Task GetSignUpInformation(IDialogContext context, LuisResult result)
+
+
+        private async Task VolunteerFormComplete(IDialogContext context, IAwaitable<VolunteerFormFlow> result)
         {
-            string message = $"I think you wanted to learn about FIRST Washington's sign-up process when you said: " + result.Query;
-            await context.PostAsync(message);
+            VolunteerFormFlow form = null;
+            try
+            {
+                form = await result;
+            }
+            catch (OperationCanceledException)
+            {
+                await context.PostAsync("Your response was canceled. If you'd like more information, reply what you'd like to learn about.");
+                return;
+
+            }
+            if (form != null)
+            {
+                await context.PostAsync("Thank you for giving us your information. If you'd like more information, reply what you'd like to learn about.");
+            }
+            else 
+            {
+                await context.PostAsync("The form returned empty response!");
+            }
+
             context.Wait(MessageReceived);
+
+        }
+
+        [LuisIntent("GetSignUp")]
+        public async Task GetSignUp(IDialogContext context, LuisResult result)
+        {
+            string message = $"I can help you learn more about volunteering. I'm going to be asking you a few quick questions.";
+            await context.PostAsync(message);
+            var volunteerForm = new FormDialog<VolunteerFormFlow>(new VolunteerFormFlow(), this.MakeVolunteerForm, FormOptions.PromptInStart);
+            context.Call<VolunteerFormFlow>(volunteerForm, VolunteerFormComplete);
         }
     }
 }
