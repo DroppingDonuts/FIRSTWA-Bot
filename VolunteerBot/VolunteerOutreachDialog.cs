@@ -38,7 +38,7 @@ namespace VolunteerBot
         [LuisIntent("GetHelp")]
         public async Task GetHelp(IDialogContext context, LuisResult result)
         {
-            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST Washington Bot 3000! I can tell you about FIRST Washington Programs and opportunities";
+            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST Washington Bot! I can tell you about FIRST Washington Programs and opportunities";
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
@@ -51,7 +51,7 @@ namespace VolunteerBot
             context.Wait(MessageReceived);
         }
 
-        [LuisIntent("GetInformation")]
+        [LuisIntent("GetInformation")]  
         public async Task GetInformation(IDialogContext context, LuisResult result)
         {
             string message = $"I think you wanted to learn more about FIRST Washington Programs when you said: " + result.Query;
@@ -59,7 +59,7 @@ namespace VolunteerBot
             context.Wait(MessageReceived);
         }
         
-        [LuisIntent("GetSignUpInformation")]
+        [LuisIntent("GetSignUp")]
         public async Task GetSignUpInformation(IDialogContext context, LuisResult result)
         {
             string message = $"I think you wanted to learn about FIRST Washington's sign-up process when you said: " + result.Query;
