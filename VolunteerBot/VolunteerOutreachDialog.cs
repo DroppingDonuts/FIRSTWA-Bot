@@ -35,32 +35,32 @@ namespace VolunteerBot
             context.Wait(MessageReceived);
         }
 
-        [LuisIntent("HelpBotInformation")]
-        public async Task HelpBotInformation(IDialogContext context, LuisResult result)
+        [LuisIntent("GetHelp")]
+        public async Task GetHelp(IDialogContext context, LuisResult result)
         {
-            string message = $"I think you wanted to meet me when you said: " + result.Query + $" So Hello, I am The FIRST Washington Bot 3000! I can tell you about FIRST Washington Programs and opportunities";
+            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST Washington Bot 3000! I can tell you about FIRST Washington Programs and opportunities";
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
 
-        [LuisIntent("StopContact")]
-        public async Task StopContact(IDialogContext context, LuisResult result)
+        [LuisIntent("EndContact")]
+        public async Task EndContact(IDialogContext context, LuisResult result)
         {
             string message = $"I think you wanted me to stop contacting when you said: " + result.Query;
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
 
-        [LuisIntent("InformUser")]
-        public async Task InformUser(IDialogContext context, LuisResult result)
+        [LuisIntent("GetInformation")]
+        public async Task GetInformation(IDialogContext context, LuisResult result)
         {
             string message = $"I think you wanted to learn more about FIRST Washington Programs when you said: " + result.Query;
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
         
-        [LuisIntent("SignUpInformation")]
-        public async Task SignUpInformation(IDialogContext context, LuisResult result)
+        [LuisIntent("GetSignUpInformation")]
+        public async Task GetSignUpInformation(IDialogContext context, LuisResult result)
         {
             string message = $"I think you wanted to learn about FIRST Washington's sign-up process when you said: " + result.Query;
             await context.PostAsync(message);
