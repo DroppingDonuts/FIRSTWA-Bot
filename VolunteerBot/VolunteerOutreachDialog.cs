@@ -42,7 +42,7 @@ namespace VolunteerBot
             bool holder;
             if (!context.UserData.TryGetValue<bool>("Seen", out holder))
             {
-                message = $"Hello! I am the FIRST WA helpbot! What would you like to do?";
+                message = $"Hello! I am the FIRST WA Bot! I can help you volunteer or learn about FIRST!";
             } else
             {
                 message = $"Sorry I did not understand: " + result.Query + "\n It resulted in intents: " + string.Join(", ", result.Intents.Select(i => i.Intent));
@@ -55,7 +55,19 @@ namespace VolunteerBot
         [LuisIntent("GetHelp")]
         public async Task GetHelp(IDialogContext context, LuisResult result)
         {
-            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST Washington Bot! I can tell you about FIRST Washington Programs and opportunities";
+            //string message;
+            /*
+            var entities = new List<EntityRecommendation>(result.Entities);
+            if(entities.Count > 1)
+            {
+                message = $"I'm sorry, I can only give you information on one thing at a time.";
+            } else
+            {
+                var entity = entities.ElementAt(0);
+                //insert what the types are and what to say to each
+            }
+            */
+            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST WA Bot! I can tell you about FIRST Washington Programs and opportunities";
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
