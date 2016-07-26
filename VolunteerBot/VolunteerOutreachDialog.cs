@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Builder.Luis;
@@ -38,7 +38,16 @@ namespace VolunteerBot
         [LuisIntent("")]
         public async Task None(IDialogContext context, LuisResult result)
         {
-            string message = $"Sorry I did not understand: " + result.Query + "\n It resulted in intents: " + string.Join(", ", result.Intents.Select(i => i.Intent));
+            string message;
+            bool holder;
+            if (!context.UserData.TryGetValue<bool>("Seen", out holder))
+            {
+                message = $"Hello! I am the FIRST WA helpbot! What would you like to do?";
+            } else
+            {
+                message = $"Sorry I did not understand: " + result.Query + "\n It resulted in intents: " + string.Join(", ", result.Intents.Select(i => i.Intent));
+            }
+            context.UserData.SetValue<bool>("Seen", true);
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
