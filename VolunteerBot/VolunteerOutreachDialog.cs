@@ -55,6 +55,7 @@ namespace VolunteerBot
         [LuisIntent("GetHelp")]
         public async Task GetHelp(IDialogContext context, LuisResult result)
         {
+            context.UserData.SetValue<bool>("Seen", true);
             //string message;
             /*
             var entities = new List<EntityRecommendation>(result.Entities);
@@ -75,6 +76,7 @@ namespace VolunteerBot
         [LuisIntent("EndContact")]
         public async Task EndContact(IDialogContext context, LuisResult result)
         {
+            context.UserData.SetValue<bool>("Seen", true);
             string message = $"I think you wanted me to stop contacting when you said: " + result.Query;
             await context.PostAsync(message);
             context.Wait(MessageReceived);
@@ -83,6 +85,7 @@ namespace VolunteerBot
         [LuisIntent("GetInformation")]  
         public async Task GetInformation(IDialogContext context, LuisResult result)
         {
+            context.UserData.SetValue<bool>("Seen", true);
             string message = $"I think you wanted to learn more about FIRST Washington Programs when you said: " + result.Query;
             await context.PostAsync(message);
             context.Wait(MessageReceived);
@@ -118,6 +121,7 @@ namespace VolunteerBot
         [LuisIntent("GetSignUp")]
         public async Task GetSignUp(IDialogContext context, LuisResult result)
         {
+            context.UserData.SetValue<bool>("Seen", true);
             string message = $"I can help you learn more about volunteering. I'm going to be asking you a few quick questions.";
             await context.PostAsync(message);
             var volunteerForm = new FormDialog<VolunteerFormFlow>(new VolunteerFormFlow(), this.MakeVolunteerForm, FormOptions.PromptInStart);
