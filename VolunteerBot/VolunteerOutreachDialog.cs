@@ -16,7 +16,7 @@ using VolunteerDataWebApi.Models;
 
 namespace VolunteerBot
 {
-    [LuisModel("0c22b84c-43f7-43f4-bd85-9adbb79b0c5e", "2086c732bb1340d9b9845d0c265fbf78")]
+    [LuisModel("6a090036-7b6b-44dd-b506-3ec7fa450897", "2086c732bb1340d9b9845d0c265fbf78")]
     [Serializable]
     public class VolunteerOutreachDialog : LuisDialog<object>
     {
