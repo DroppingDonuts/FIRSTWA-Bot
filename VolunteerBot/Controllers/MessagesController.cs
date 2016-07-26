@@ -21,6 +21,7 @@ namespace VolunteerBot
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
+            StateClient stateClient = activity.GetStateClient();
             if (activity.Type == ActivityTypes.Message)
             {
                 // Filter for command style messages instead of natural language processing

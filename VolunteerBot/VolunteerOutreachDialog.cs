@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Builder.Luis;
@@ -38,7 +38,16 @@ namespace VolunteerBot
         [LuisIntent("")]
         public async Task None(IDialogContext context, LuisResult result)
         {
-            string message = $"Sorry I did not understand: " + result.Query + "\n It resulted in intents: " + string.Join(", ", result.Intents.Select(i => i.Intent));
+            string message;
+            bool holder;
+            if (!context.UserData.TryGetValue<bool>("Seen", out holder))
+            {
+                message = $"Hello! I am the FIRST WA Bot! I can help you volunteer or learn about FIRST!";
+            } else
+            {
+                message = $"Sorry I did not understand: " + result.Query + "\n It resulted in intents: " + string.Join(", ", result.Intents.Select(i => i.Intent));
+            }
+            context.UserData.SetValue<bool>("Seen", true);
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
@@ -46,7 +55,20 @@ namespace VolunteerBot
         [LuisIntent("GetHelp")]
         public async Task GetHelp(IDialogContext context, LuisResult result)
         {
-            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST Washington Bot! I can tell you about FIRST Washington Programs and opportunities";
+            context.UserData.SetValue<bool>("Seen", true);
+            //string message;
+            /*
+            var entities = new List<EntityRecommendation>(result.Entities);
+            if(entities.Count > 1)
+            {
+                message = $"I'm sorry, I can only give you information on one thing at a time.";
+            } else
+            {
+                var entity = entities.ElementAt(0);
+                //insert what the types are and what to say to each
+            }
+            */
+            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST WA Bot! I can tell you about FIRST Washington Programs and opportunities";
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
@@ -56,14 +78,9 @@ namespace VolunteerBot
         [LuisIntent("EndContact")]
         public async Task EndContact(IDialogContext context, LuisResult result)
         {
-            //string message = $"I think you wanted me to stop contacting when you said: " + result.Query;
-            //await context.PostAsync(message);
-            //context.Wait(MessageReceived);
             string response = $"I think you wanted me to stop contacting when you said: " + result.Query + "  Do you want your data removed from our system?";
             await context.PostAsync(response);
             PromptDialog.Confirm(context, DeleteContactInformation, response);
-            //"Would you like me to delete all the data on the database?");
-
         }
 
         private async Task DeleteContactInformation(IDialogContext context, IAwaitable<bool> options) {
@@ -86,6 +103,7 @@ namespace VolunteerBot
         [LuisIntent("GetInformation")]  
         public async Task GetInformation(IDialogContext context, LuisResult result)
         {
+            context.UserData.SetValue<bool>("Seen", true);
             string message = $"I think you wanted to learn more about FIRST Washington Programs when you said: " + result.Query;
             await context.PostAsync(message);
             context.Wait(MessageReceived);
@@ -121,6 +139,7 @@ namespace VolunteerBot
         [LuisIntent("GetSignUp")]
         public async Task GetSignUp(IDialogContext context, LuisResult result)
         {
+            context.UserData.SetValue<bool>("Seen", true);
             string message = $"I can help you learn more about volunteering. I'm going to be asking you a few quick questions.";
             await context.PostAsync(message);
             var volunteerForm = new FormDialog<VolunteerFormFlow>(new VolunteerFormFlow(), this.MakeVolunteerForm, FormOptions.PromptInStart);

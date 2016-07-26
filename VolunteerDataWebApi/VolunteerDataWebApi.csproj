@@ -130,7 +130,11 @@
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201607262147237_Update.resx">
+      <DependentUpon>201607262147237_Update.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -172,9 +176,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201607202322163_Initial.cs" />
-    <Compile Include="Migrations\201607202322163_Initial.Designer.cs">
-      <DependentUpon>201607202322163_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201607262147237_Update.cs" />
+    <Compile Include="Migrations\201607262147237_Update.Designer.cs">
+      <DependentUpon>201607262147237_Update.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Volunteer.cs" />
@@ -242,11 +246,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201607202322163_Initial.resx">
-      <DependentUpon>201607202322163_Initial.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

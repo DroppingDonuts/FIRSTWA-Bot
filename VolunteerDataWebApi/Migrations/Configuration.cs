@@ -33,26 +33,36 @@ namespace VolunteerDataWebApi.Migrations
                 {
                     Name = "Debra Garcia",
                     Email = "debra@example.com",
+                    PostalCode = "98052",
+                    CanMessage = true
                 },
                 new Volunteer
                 {
                     Name = "Thorsten Weinrich",
                     Email = "thorsten@example.com",
+                    PostalCode = "97027",
+                    CanMessage = false
                 },
                 new Volunteer
                 {
                     Name = "Yuhong Li",
                     Email = "yuhong@example.com",
+                    PostalCode = "10007",
+                    CanMessage = true
                 },
                 new Volunteer
                 {
                     Name = "Jon Orton",
                     Email = "jon@example.com",
+                    PostalCode = "98007",
+                    CanMessage = true
                 },
                 new Volunteer
                 {
                     Name = "Diliana Alexieva-Bosseva",
                     Email = "diliana@example.com",
+                    PostalCode = "14852",
+                    CanMessage = false
                 }
                 );
 
