@@ -15,7 +15,7 @@ using VolunteerDataWebApi.Models;
 
 namespace VolunteerBot
 {
-    [LuisModel("ec28aeb2-bf7b-40ce-84bd-21e3b706838c", "a9b2b734425a4594a7159349612bc36a")]
+    [LuisModel("0c22b84c-43f7-43f4-bd85-9adbb79b0c5e", "2086c732bb1340d9b9845d0c265fbf78")]
     [Serializable]
     public class VolunteerOutreachDialog : LuisDialog<object>
     {
@@ -35,75 +35,108 @@ namespace VolunteerBot
             context.Wait(MessageReceived);
         }
 
-        [LuisIntent("LookupVolunteerEvents")]
-        public async Task LookupVolunteerEvents(IDialogContext context, LuisResult result)
+
+        [LuisIntent("HelpBotInformation")]
+        public async Task GetBotHelp(IDialogContext context, LuisResult result)
         {
-            string eventStrings = String.Empty;
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(volunteerDataBaseUri);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                // Get all events between now and the next 90 days
-                HttpResponseMessage response = await client.GetAsync($"api/events?startDate={DateTime.UtcNow}&endDate={DateTime.UtcNow + new TimeSpan(90,0,0,0)}");
-                if (response.IsSuccessStatusCode)
-                {
-                    IEnumerable<Event> events = await response.Content.ReadAsAsync<IEnumerable<Event>>();
-                    // PROTOTYPE: This is inefficient, consider exposing OData style order by and filter functionality on data side instead. 
-                    var orderedEvents = events.OrderBy(p => p.StartDateTime);
-                    foreach (Event e in orderedEvents)
-                    {
-                        var date = e.StartDateTime.ToLocalTime();
-                        eventStrings += $"{e.Name} [{date:M/d/yyyy}, {date:h:mmtt}-{date + e.Duration:h:mmtt}]\n\r";
-                    }
-
-                    if (String.IsNullOrEmpty(eventStrings))
-                    {
-                        eventStrings = "No events have been scheduled right now, but check back soon!\n\r";
-                    }
-                }
-                else
-                {
-                    eventStrings = $"Failed to get events from DB with error: {response.StatusCode}";
-                }
-            }
-            string message = $"I think you wanted me to tell you about upcoming volunteer events when you said: " + result.Query;
-            message += $"\n\rHere are the upcoming events:\n\r {eventStrings}";
+            string message = $"I think you wanted to know what I can do when you said: " + result.Query;
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
 
-        [LuisIntent("RegisterAsVolunteer")]
-        public async Task RegisterAsVolunteer(IDialogContext context, LuisResult result)
+        [LuisIntent("StopContact")]
+        public async Task RemoveVolunteer(IDialogContext context, LuisResult result)
         {
-            string message = $"I think you wanted to register as a volunteer when you said: " + result.Query;
+            string message = $"I think you wanted me to stop messaging you when you said: " + result.Query;
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
 
-        [LuisIntent("VolunteerForEvent")]
-        public async Task VolunteerForEvent(IDialogContext context, LuisResult result)
+        [LuisIntent("SignUpInformation")]
+        public async Task AddVolunteer(IDialogContext context, LuisResult result)
         {
-            string message = $"I think you wanted to volunteer for an event when you said: " + result.Query;
+            string message = $"I think you wanted to sign up as a volunteer when you said: " + result.Query;
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
 
-        [LuisIntent("UnregisterAsVolunteer")]
-        public async Task UnregisterAsVolunteer(IDialogContext context, LuisResult result)
+        [LuisIntent("InformUser")]
+        public async Task GetInformation(IDialogContext context, LuisResult result)
         {
-            string message = $"I think you wanted to unregister as a volunteer when you said: " + result.Query;
+            string message = $"I think you wanted to know more about a topic when you said: " + result.Query;
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
+
+        //[LuisIntent("LookupVolunteerEvents")]
+        //public async Task LookupVolunteerEvents(IDialogContext context, LuisResult result)
+        //{
+        //    string eventStrings = String.Empty;
+        //    using (var client = new HttpClient())
+        //    {
+        //        client.BaseAddress = new Uri(volunteerDataBaseUri);
+        //        client.DefaultRequestHeaders.Accept.Clear();
+        //        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        //        // Get all events between now and the next 90 days
+        //        HttpResponseMessage response = await client.GetAsync($"api/events?startDate={DateTime.UtcNow}&endDate={DateTime.UtcNow + new TimeSpan(90,0,0,0)}");
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            IEnumerable<Event> events = await response.Content.ReadAsAsync<IEnumerable<Event>>();
+        //            // PROTOTYPE: This is inefficient, consider exposing OData style order by and filter functionality on data side instead. 
+        //            var orderedEvents = events.OrderBy(p => p.StartDateTime);
+        //            foreach (Event e in orderedEvents)
+        //            {
+        //                var date = e.StartDateTime.ToLocalTime();
+        //                eventStrings += $"{e.Name} [{date:M/d/yyyy}, {date:h:mmtt}-{date + e.Duration:h:mmtt}]\n\r";
+        //            }
+
+        //            if (String.IsNullOrEmpty(eventStrings))
+        //            {
+        //                eventStrings = "No events have been scheduled right now, but check back soon!\n\r";
+        //            }
+        //        }
+        //        else
+        //        {
+        //            eventStrings = $"Failed to get events from DB with error: {response.StatusCode}";
+        //        }
+        //    }
+        //    string message = $"I think you wanted me to tell you about upcoming volunteer events when you said: " + result.Query;
+        //    message += $"\n\rHere are the upcoming events:\n\r {eventStrings}";
+        //    await context.PostAsync(message);
+        //    context.Wait(MessageReceived);
+        //}
+
+        //[LuisIntent("RegisterAsVolunteer")]
+        //public async Task RegisterAsVolunteer(IDialogContext context, LuisResult result)
+        //{
+        //    string message = $"I think you wanted to register as a volunteer when you said: " + result.Query;
+        //    await context.PostAsync(message);
+        //    context.Wait(MessageReceived);
+        //}
+
+        //[LuisIntent("VolunteerForEvent")]
+        //public async Task VolunteerForEvent(IDialogContext context, LuisResult result)
+        //{
+        //    string message = $"I think you wanted to volunteer for an event when you said: " + result.Query;
+        //    await context.PostAsync(message);
+        //    context.Wait(MessageReceived);
+        //}
+
+        //[LuisIntent("UnregisterAsVolunteer")]
+        //public async Task UnregisterAsVolunteer(IDialogContext context, LuisResult result)
+        //{
+        //    string message = $"I think you wanted to unregister as a volunteer when you said: " + result.Query;
+        //    await context.PostAsync(message);
+        //    context.Wait(MessageReceived);
+        //}
         
-        [LuisIntent("WithdrawFromEvent")]
-        public async Task WithdrawFromEvent(IDialogContext context, LuisResult result)
-        {
-            string message = $"I think you wanted to stop volunteering for an event when you said: " + result.Query;
-            await context.PostAsync(message);
-            context.Wait(MessageReceived);
-        }
+        //[LuisIntent("WithdrawFromEvent")]
+        //public async Task WithdrawFromEvent(IDialogContext context, LuisResult result)
+        //{
+        //    string message = $"I think you wanted to stop volunteering for an event when you said: " + result.Query;
+        //    await context.PostAsync(message);
+        //    context.Wait(MessageReceived);
+        //}
     }
 }
