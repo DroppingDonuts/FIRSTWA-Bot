@@ -173,8 +173,16 @@ namespace VolunteerBot
         public async Task GetSignUp(IDialogContext context, LuisResult result)
         {
             context.UserData.SetValue<bool>("Seen", true);
-            string message = $"I can help you learn more about volunteering. I'm going to be asking you a few quick questions.";
-            await context.PostAsync(message);
+            var entities = new List<EntityRecommendation>(result.Entities);
+            if(entities.Count > 0 && entities.ElementAt(0).Entity.Equals("tribute"))
+            {
+                string message = $"The capital thanks you. May the odds be ever in your favor. But first, you must complete your interview.";
+                await context.PostAsync(message);
+            } else
+            {
+                string message = $"I can help you learn more about volunteering. I'm going to be asking you a few quick questions.";
+                await context.PostAsync(message);
+            }
             var volunteerForm = new FormDialog<VolunteerFormFlow>(new VolunteerFormFlow(), this.MakeVolunteerForm, FormOptions.PromptInStart);
             context.Call<VolunteerFormFlow>(volunteerForm, VolunteerFormComplete);
         }
