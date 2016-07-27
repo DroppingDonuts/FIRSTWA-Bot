@@ -13,6 +13,8 @@ using System.Configuration;
 
 // PROTOTYPE: For convenience, this reuses the Entity Framework definitions for the Volunteer data model.
 using VolunteerDataWebApi.Models;
+using Newtonsoft.Json;
+using Microsoft.Bot.Builder.Internals.Fibers;
 
 namespace VolunteerBot
 {
@@ -63,36 +65,98 @@ namespace VolunteerBot
         [LuisIntent("GetHelp")]
         public async Task GetHelp(IDialogContext context, LuisResult result)
         {
-            context.UserData.SetValue<bool>("Seen", true);         
-            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST WA Bot! I can tell you about FIRST WA Programs and opportunities";
+            context.UserData.SetValue<bool>("Seen", true);
+            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST WA Bot! I can tell you about FIRST Washington Programs and opportunities";
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
 
-        //enum ChoiceOptions {  yes, no, };
-
         [LuisIntent("EndContact")]
         public async Task EndContact(IDialogContext context, LuisResult result)
         {
-            string response = $"I think you wanted me to stop contacting when you said: " + result.Query + "  Do you want your data removed from our system?";
-            await context.PostAsync(response);
-            PromptDialog.Confirm(context, DeleteContactInformation, response);
+            context.UserData.RemoveValue("Seen");
+            string message = $"I think you wanted me to stop contacting you when you said: " + result.Query + ".\n";
+
+            Volunteer volunteer = null;
+            int volunteerId;
+            if (context.UserData.TryGetValue<int>("VolunteerId", out volunteerId))
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(volunteerDataBaseUri);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    HttpResponseMessage response = await client.GetAsync($"api/volunteers/{volunteerId}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseJson = response.Content.ReadAsStringAsync().Result;
+                        volunteer = JsonConvert.DeserializeObject<Volunteer>(responseJson);
+
+                        if (volunteer != null)
+                        {
+                            PromptDialog.Confirm(context, DeleteContactInformation, message + $"Do you want your data for {volunteer.Email} removed from our system?");
+                        }
+                    }
+                }
+            }
+
+            if (volunteer == null)
+            {
+                await context.PostAsync(message + "We'll still be here if you want to talk to us in the future, bye!");
+                context.Wait(MessageReceived);
+            }
         }
 
-        private async Task DeleteContactInformation(IDialogContext context, IAwaitable<bool> options) {
-            var response = string.Empty;
-            switch (await options)
+        private async Task DeleteContactInformation(IDialogContext context, IAwaitable<bool> deleteInfo)
+        {
+            int volunteerId;
+            using (var client = new HttpClient())
             {
-                case true:
-                    response = "Your information has been removed from the FIRST WA system";
-                    break;
-                default:
-                    response = "Your information remains in the FIRST WA system";
-                    break;
+                client.BaseAddress = new Uri(volunteerDataBaseUri);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
+                if (context.UserData.TryGetValue<int>("VolunteerId", out volunteerId))
+                {
+                    if (await deleteInfo)
+                    {
+                        HttpResponseMessage response = await client.DeleteAsync($"api/volunteers/{volunteerId}");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            context.UserData.RemoveValue("VolunteerId");
+                            await context.PostAsync($"We've removed your information from our system. Thanks for talking to us!");
+                        }
+                        else
+                        {
+                            await context.PostAsync($"I failed to remove your data from our servers! I'm sorry! Please try again later ...");
+                        }
+                    }
+                    else
+                    {
+                        HttpResponseMessage response = await client.GetAsync($"api/volunteers/{volunteerId}");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            string responseJson = response.Content.ReadAsStringAsync().Result;
+                            Volunteer volunteer = JsonConvert.DeserializeObject<Volunteer>(responseJson);
+                            volunteer.CanMessage = false;
+                            response = await client.PutAsJsonAsync($"api/volunteers/{volunteerId}", volunteer);
+                            if (response.IsSuccessStatusCode)
+                            {
+                                await context.PostAsync($"Okay, we'll stop contacting you, but your information is still with us if you want to talk to us again in the future. Thank you!");
+                            }
+                        }
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            await context.PostAsync($"I'm sorry, I can't seem to update your preference not to be contacted right now! Please try again later ...");
+                        }
+                    }
+                }
+                else
+                {
+                    await context.PostAsync("It looks like your information has already been removed. Thanks for talking to us!");
+                }
             }
-            await context.PostAsync(response);
-
             context.Wait(MessageReceived);
         }
 
@@ -183,11 +247,9 @@ namespace VolunteerBot
             {
                 await context.PostAsync("Your response was canceled. If you'd like more information, reply what you'd like to learn about.");
                 return;
-
             }
             if (form != null)
             {
-                string eventStrings = String.Empty;
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(volunteerDataBaseUri);
@@ -200,11 +262,19 @@ namespace VolunteerBot
                     newVolunteer.PostalCode = form.ZipCode;
                     newVolunteer.CanMessage = true;
 
-                    // Get all events between now and the next 90 days
                     HttpResponseMessage response = await client.PostAsJsonAsync("api/volunteers", newVolunteer);
                     if (response.IsSuccessStatusCode)
                     {
-                        await context.PostAsync("Thank you for giving us your information. If you'd like more information, reply what you'd like to learn about.");
+                        Volunteer outVolunteer = await response.Content.ReadAsAsync<Volunteer>();
+                        if (outVolunteer != null)
+                        {
+                            context.UserData.SetValue<int>("VolunteerId", outVolunteer.Id);
+                            await context.PostAsync("Thank you for giving us your information. If you'd like more information, reply what you'd like to learn about.");
+                        }
+                        else
+                        {
+                            await context.PostAsync("Failed to get volunteer ID that was added. Oops.");
+                        }
                     }
                     else
                     {
@@ -216,26 +286,79 @@ namespace VolunteerBot
             {
                 await context.PostAsync("The form returned empty response!");
             }
-
             context.Wait(MessageReceived);
+        }
+
+        private async Task UpdateContactInformation(IDialogContext context, IAwaitable<bool> isAlreadyRegistered)
+        {
+            if (await isAlreadyRegistered)
+            {
+                await context.PostAsync("Great! How can I help you? I can tell you more about FIRST WA robotics, robotics leagues or volunteer roles.");
+                context.Wait(MessageReceived);
+            }
+            else
+            {
+                await context.PostAsync("I'm sorry, let me get your details first then.");
+                AddContactInformation(context);
+            }
+        }
+
+        private void AddContactInformation(IDialogContext context)
+        {
+            var volunteerForm = new FormDialog<VolunteerFormFlow>(new VolunteerFormFlow(), this.MakeVolunteerForm, FormOptions.PromptInStart);
+            context.Call<VolunteerFormFlow>(volunteerForm, VolunteerFormComplete);
         }
 
         [LuisIntent("GetSignUp")]
         public async Task GetSignUp(IDialogContext context, LuisResult result)
         {
             context.UserData.SetValue<bool>("Seen", true);
-            var entities = new List<EntityRecommendation>(result.Entities);
-            if(entities.Count > 0 && entities.ElementAt(0).Entity.Equals("tribute"))
+            int volunteerId;
+            string message = "I can help you learn more about volunteering.";
+            if (context.UserData.TryGetValue<int>("VolunteerId", out volunteerId))
             {
-                string message = $"The capital thanks you. May the odds be ever in your favor. But first, you must complete your interview. Here it comes.";
-                await context.PostAsync(message);
-            } else
-            {
-                string message = $"I can help you learn more about volunteering. Just a moment. I'm going to be asking you a few quick questions.";
-                await context.PostAsync(message);
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(volunteerDataBaseUri);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    HttpResponseMessage response = await client.GetAsync($"api/volunteers/{volunteerId}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseJson = response.Content.ReadAsStringAsync().Result;
+                        Volunteer volunteer = JsonConvert.DeserializeObject<Volunteer>(responseJson);
+                        if (volunteer != null)
+                        {
+                            message = $" It looks like we've previously chatted about this. Are you {volunteer.Name} ({volunteer.Email}) at {volunteer.PostalCode}?";
+                            PromptDialog.Confirm(context, UpdateContactInformation, message);
+                        }
+                        else
+                        {
+                            await context.PostAsync($"Received a response from api/volunteers/{volunteerId} that I could not parse. I'm confused! T_T");
+                            context.Wait(MessageReceived);
+                        }
+                    }
+                    else
+                    {
+                        await context.PostAsync("Sorry, I couldn't figure out if we'd chatted before, can I get your details again?");
+                        AddContactInformation(context);
+                    }
+                }
             }
-            var volunteerForm = new FormDialog<VolunteerFormFlow>(new VolunteerFormFlow(), this.MakeVolunteerForm, FormOptions.PromptInStart);
-            context.Call<VolunteerFormFlow>(volunteerForm, VolunteerFormComplete);
+            else
+            {
+                message += " I'm going to be asking you a few quick questions.";
+                await context.PostAsync(message);
+                AddContactInformation(context);
+            }
         }
+    }
+}
+public class Awaiter : IAwaitable<bool>
+{
+    public IAwaiter<bool> GetAwaiter()
+    {
+        throw new NotImplementedException();
     }
 }
