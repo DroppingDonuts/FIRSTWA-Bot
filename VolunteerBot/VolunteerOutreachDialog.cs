@@ -25,10 +25,10 @@ namespace VolunteerBot
 
         private readonly string[][] leagueWords = new string[4][]
         {
-            new string[] { "fll", "first lego league", "lego robotics"},
+            new string[] { "fll", "first lego league", "lego robotics", "lego"},
             new string[] {"ftc", "first tech challenge", "first tech competition"},
             new string[] {"frc", "first robotics competition", "first robotics challenge"},
-            new string[] {"fll jr", "fll jr.", "fll junior", "first lego league jr", "first lego league jr.", "first lego league junior"}
+            new string[] {"fll jr", "fll jr.", "fll junior", "first lego league jr", "first lego league jr.", "first lego league junior", "junior", "jr", "jr."}
         };
 
         internal VolunteerOutreachDialog(BuildFormDelegate<VolunteerFormFlow> makeVolunteerForm)
@@ -114,7 +114,7 @@ namespace VolunteerBot
                 {
                     if(entity.Entity.Equals("leagues") || entity.Entity.Equals("programs"))
                     {
-                        message = $"I think that you wanted to learn more about all the FIRST WA programs when you said: " + result.Query;
+                        message = $"FIRST has 4 programs for students (K-12).\nFIRST Robotics Competition(FRC) for grades 9 - 12.\nFIRST Tech Challenge(FTC) for grades 7 - 12.\nFIRST LEGO League(FLL) for grades 4 - 8. FIRST LEGO League Jr(FLLJr) for grades K-4) More info: http://www.firstinspires.org/";
                     } else 
                     {
                         bool found = false;
@@ -139,16 +139,16 @@ namespace VolunteerBot
                             switch(i)
                             {
                                 case 0:
-                                    message = $"FIRST LEGO League teams (4th-8th grades) build and program a LEGO MINDSTORMS robot and research a real-world problem. More info:\nhttp://bit.ly/2aqDnAO";
+                                    message = $"FIRST LEGO League teams (4th-8th grades) build and program a LEGO MINDSTORMS robot and research a real-world problem. More info: http://bit.ly/2aqDnAO";
                                     break;
                                 case 1:
-                                    message = $"FIRST Tech Challenge teams (grades 7-12) are challenged to design, build, program, and operate robots to play a floor game in an alliance format. More info:\nhttp://bit.ly/2axOiZ4";
+                                    message = $"FIRST Tech Challenge teams (grades 7-12) are challenged to design, build, program, and operate robots to play a floor game in an alliance format. More info: http://bit.ly/2axOiZ4";
                                     break;
                                 case 2:
-                                    message = $"FIRST Robotics Competition teams (grades 9-12) are challenged to build and program industrial-size robots to play a difficult field game against like-minded competitors. It’s as close to real-world engineering as a student can get. More info:\nhttp://bit.ly/29ZZO1B";
+                                    message = $"FIRST Robotics Competition teams (grades 9-12) are challenged to build and program industrial-size robots to play a difficult field game against like-minded competitors. It’s as close to real-world engineering as a student can get. More info: http://bit.ly/29ZZO1B";
                                     break;
                                 case 3:
-                                    message = $"FIRST LEGO League Junior teams (ages 6-10) are introduced to STEM concepts using LEGO and simple machines. More info:\nhttp://bit.ly/2aaa6JT";
+                                    message = $"FIRST LEGO League Junior teams (ages 6-10) are introduced to STEM concepts using LEGO and simple machines. More info: http://bit.ly/2aaa6JT";
                                     break;
                                 default:
                                     message = $"Internal code error occured. Try again.";
@@ -159,6 +159,9 @@ namespace VolunteerBot
                             message = $"I think that you wanted to learn more about " + entity.Entity + " when you said: " + result.Query;
                         }
                     }
+                } else if(entity.Type.Equals("Event"))
+                {
+                    message = $"Competition events for FIRST Teams are found on the Calendar. Link: http://firstwa.org/Calendar";
                 } else
                 {
                     message = $"I think you wanted to learn more about FIRST WA Programs when you said: " + result.Query;
