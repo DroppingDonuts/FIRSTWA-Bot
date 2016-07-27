@@ -1,35 +1,21 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-
 using Microsoft.Bot.Builder.FormFlow;
-
 using Microsoft.Bot.Builder.FormFlow.Advanced;
-
 using Newtonsoft.Json.Linq;
-
 using System;
-
 using System.Collections.Concurrent;
-
 using System.Collections.Generic;
-
 using System.Globalization;
-
 using System.IO;
-
 using System.Linq;
-
 using System.Reflection;
-
 using System.Threading;
-
-
 
 namespace VolunteerBot
 {
     [Serializable]
     public class VolunteerFormFlow
     {
-
         [Prompt("What is your full name?")]
         public string FullName;
 
@@ -41,7 +27,6 @@ namespace VolunteerBot
 
         public static IForm<VolunteerFormFlow> BuildForm()
         {
-
             return new FormBuilder<VolunteerFormFlow>()
                         .Field(nameof(VolunteerFormFlow.FullName))
                         .Field(nameof(VolunteerFormFlow.ZipCode))

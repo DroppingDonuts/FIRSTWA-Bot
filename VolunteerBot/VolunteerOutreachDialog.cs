@@ -61,12 +61,30 @@ namespace VolunteerBot
             context.Wait(MessageReceived);
         }
 
+        //enum ChoiceOptions {  yes, no, };
+
         [LuisIntent("EndContact")]
         public async Task EndContact(IDialogContext context, LuisResult result)
         {
-            context.UserData.SetValue<bool>("Seen", true);
-            string message = $"I think you wanted me to stop contacting when you said: " + result.Query;
-            await context.PostAsync(message);
+            string response = $"I think you wanted me to stop contacting when you said: " + result.Query + "  Do you want your data removed from our system?";
+            await context.PostAsync(response);
+            PromptDialog.Confirm(context, DeleteContactInformation, response);
+        }
+
+        private async Task DeleteContactInformation(IDialogContext context, IAwaitable<bool> options) {
+            var response = string.Empty;
+            switch (await options)
+            {
+                case true:
+                    response = "Your information has been removed from the FIRST WA system";
+                    break;
+                default:
+                    response = "Your information remains in the FIRST WA system";
+                    break;
+
+            }
+            await context.PostAsync(response);
+
             context.Wait(MessageReceived);
         }
 
@@ -103,7 +121,6 @@ namespace VolunteerBot
             context.Wait(MessageReceived);
         }
 
-
         private async Task VolunteerFormComplete(IDialogContext context, IAwaitable<VolunteerFormFlow> result)
         {
             VolunteerFormFlow form = null;
@@ -119,7 +136,30 @@ namespace VolunteerBot
             }
             if (form != null)
             {
-                await context.PostAsync("Thank you for giving us your information. If you'd like more information, reply what you'd like to learn about.");
+                string eventStrings = String.Empty;
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(volunteerDataBaseUri);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    Volunteer newVolunteer = new Volunteer();
+                    newVolunteer.Email = form.EmailAddress;
+                    newVolunteer.Name = form.FullName;
+                    newVolunteer.PostalCode = form.ZipCode;
+                    newVolunteer.CanMessage = true;
+
+                    // Get all events between now and the next 90 days
+                    HttpResponseMessage response = await client.PostAsJsonAsync("api/volunteers", newVolunteer);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        await context.PostAsync("Thank you for giving us your information. If you'd like more information, reply what you'd like to learn about.");
+                    }
+                    else
+                    {
+                        await context.PostAsync($"Sorry, we seem to have some problem saving your details right now. Could you try again later? (Error:{response.StatusCode})");
+                    }
+                }
             }
             else 
             {
@@ -127,7 +167,6 @@ namespace VolunteerBot
             }
 
             context.Wait(MessageReceived);
-
         }
 
         [LuisIntent("GetSignUp")]
