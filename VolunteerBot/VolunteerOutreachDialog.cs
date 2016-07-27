@@ -310,8 +310,16 @@ namespace VolunteerBot
         public async Task GetSignUp(IDialogContext context, LuisResult result)
         {
             context.UserData.SetValue<bool>("Seen", true);
-            int volunteerId;
             string message = "I can help you learn more about volunteering.";
+
+            // Easter egg
+            var entities = new List<EntityRecommendation>(result.Entities);
+            if (entities.Count > 0 && entities.ElementAt(0).Entity.Equals("tribute"))
+            {
+                message = "The capital thanks you. May the odds be ever in your favor. But first, you must complete your interview.";
+            }
+
+            int volunteerId;
             if (context.UserData.TryGetValue<int>("VolunteerId", out volunteerId))
             {
                 using (var client = new HttpClient())
