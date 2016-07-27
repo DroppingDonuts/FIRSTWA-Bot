@@ -55,20 +55,8 @@ namespace VolunteerBot
         [LuisIntent("GetHelp")]
         public async Task GetHelp(IDialogContext context, LuisResult result)
         {
-            context.UserData.SetValue<bool>("Seen", true);
-            //string message;
-            /*
-            var entities = new List<EntityRecommendation>(result.Entities);
-            if(entities.Count > 1)
-            {
-                message = $"I'm sorry, I can only give you information on one thing at a time.";
-            } else
-            {
-                var entity = entities.ElementAt(0);
-                //insert what the types are and what to say to each
-            }
-            */
-            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST WA Bot! I can tell you about FIRST Washington Programs and opportunities";
+            context.UserData.SetValue<bool>("Seen", true);         
+            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST WA Bot! I can tell you about FIRST WA Programs and opportunities";
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
@@ -86,7 +74,31 @@ namespace VolunteerBot
         public async Task GetInformation(IDialogContext context, LuisResult result)
         {
             context.UserData.SetValue<bool>("Seen", true);
-            string message = $"I think you wanted to learn more about FIRST Washington Programs when you said: " + result.Query;
+            string message;
+
+            var entities = new List<EntityRecommendation>(result.Entities);
+            if (entities.Count > 1)
+            {
+                message = $"I'm sorry, I can only give you information on one thing at a time.";
+            }
+            else
+            {
+                var entity = entities.ElementAt(0);
+                if (entity.Type.Equals("League"))
+                {
+                    if(entity.Entity.Equals("leagues") || entity.Entity.Equals("programs"))
+                    {
+                        message = $"I think that you wanted to learn more about all the FIRST WA programs when you said: " + result.Query;
+                    } else 
+                    {
+                        message = $"I think that you wanted to learn more about " + entity.Entity + " when you said: " + result.Query;
+                    }
+                } else
+                {
+                    message = $"I think you wanted to learn more about FIRST WA Programs when you said: " + result.Query;
+                }
+            }
+
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
