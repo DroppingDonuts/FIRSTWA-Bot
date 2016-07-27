@@ -25,6 +25,14 @@ namespace VolunteerBot
         private readonly BuildFormDelegate<VolunteerFormFlow> MakeVolunteerForm;
         private readonly string volunteerDataBaseUri;
 
+        private readonly string[][] leagueWords = new string[4][]
+        {
+            new string[] { "fll", "first lego league", "lego robotics"},
+            new string[] {"ftc", "first tech challenge", "first tech competition"},
+            new string[] {"frc", "first robotics competition", "first robotics challenge"},
+            new string[] {"fll jr", "fll jr.", "fll junior", "first lego league jr", "first lego league jr.", "first lego league junior"}
+        };
+
         internal VolunteerOutreachDialog(BuildFormDelegate<VolunteerFormFlow> makeVolunteerForm)
         { 
              this.MakeVolunteerForm = makeVolunteerForm; 
@@ -156,7 +164,71 @@ namespace VolunteerBot
         public async Task GetInformation(IDialogContext context, LuisResult result)
         {
             context.UserData.SetValue<bool>("Seen", true);
-            string message = $"I think you wanted to learn more about FIRST Washington Programs when you said: " + result.Query;
+            string message;
+
+            var entities = new List<EntityRecommendation>(result.Entities);
+            if (entities.Count > 1)
+            {
+                message = $"I'm sorry, I can only give you information on one thing at a time.";
+            }
+            else
+            {
+                var entity = entities.ElementAt(0);
+                if (entity.Type.Equals("League"))
+                {
+                    if(entity.Entity.Equals("leagues") || entity.Entity.Equals("programs"))
+                    {
+                        message = $"I think that you wanted to learn more about all the FIRST WA programs when you said: " + result.Query;
+                    } else 
+                    {
+                        bool found = false;
+                        int i;
+                        for(i = 0;  i < leagueWords.Length; i++)
+                        {
+                            for(int j = 0; j < leagueWords[i].Length; j++)
+                            {
+                                if(entity.Entity.Equals(leagueWords[i][j]))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (found)
+                            {
+                                break;
+                            }
+                        }
+                        if(found)
+                        {
+                            switch(i)
+                            {
+                                case 0:
+                                    message = $"FIRST LEGO League teams (4th-8th grades) build and program a LEGO MINDSTORMS robot and research a real-world problem. More info:\nhttp://bit.ly/2aqDnAO";
+                                    break;
+                                case 1:
+                                    message = $"FIRST Tech Challenge teams (grades 7-12) are challenged to design, build, program, and operate robots to play a floor game in an alliance format. More info:\nhttp://bit.ly/2axOiZ4";
+                                    break;
+                                case 2:
+                                    message = $"FIRST Robotics Competition teams (grades 9-12) are challenged to build and program industrial-size robots to play a difficult field game against like-minded competitors. It’s as close to real-world engineering as a student can get. More info:\nhttp://bit.ly/29ZZO1B";
+                                    break;
+                                case 3:
+                                    message = $"FIRST LEGO League Junior teams (ages 6-10) are introduced to STEM concepts using LEGO and simple machines. More info:\nhttp://bit.ly/2aaa6JT";
+                                    break;
+                                default:
+                                    message = $"Internal code error occured. Try again.";
+                                    break;
+                            }
+                        } else
+                        {
+                            message = $"I think that you wanted to learn more about " + entity.Entity + " when you said: " + result.Query;
+                        }
+                    }
+                } else
+                {
+                    message = $"I think you wanted to learn more about FIRST WA Programs when you said: " + result.Query;
+                }
+            }
+
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
