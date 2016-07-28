@@ -27,10 +27,10 @@ namespace VolunteerBot
 
         private readonly string[][] leagueWords = new string[4][]
         {
-            new string[] { "fll", "first lego league", "lego robotics", "lego"},
+            new string[] {"fll", "first lego league", "lego robotics", "lego"},
             new string[] {"ftc", "first tech challenge", "first tech competition"},
             new string[] {"frc", "first robotics competition", "first robotics challenge"},
-            new string[] {"fll jr", "fll jr.", "fll junior", "first lego league jr", "first lego league jr.", "first lego league junior", "junior", "jr", "jr."}
+            new string[] {"flljr", "fll jr", "fll jr.", "fll junior", "first lego league jr", "first lego league jr.", "first lego league junior", "junior", "jr", "jr."}
         };
 
         internal VolunteerOutreachDialog(BuildFormDelegate<VolunteerFormFlow> makeVolunteerForm)
@@ -38,11 +38,24 @@ namespace VolunteerBot
              this.MakeVolunteerForm = makeVolunteerForm; 
         }
 
-
-    public VolunteerOutreachDialog()
+        public VolunteerOutreachDialog()
         {
             var rootWebConfig = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~/");
             this.volunteerDataBaseUri = rootWebConfig.AppSettings.Settings["VolunteerDataBaseUri"].Value;
+        }
+
+        private async Task ConfirmAddVolunteer(IDialogContext context, IAwaitable<bool> addVolunteer)
+        {
+            if (await addVolunteer)
+            {
+                await context.PostAsync("Great! Let me gather your information so someone can follow up with you ...");
+                AddContactInformation(context);
+            }
+            else
+            {
+                await context.PostAsync("Okay, in that case I can still tell you more about FIRST Washington Robotics programs. What would you like to know?");
+                context.Wait(MessageReceived);
+            }
         }
 
         [LuisIntent("")]
@@ -52,21 +65,27 @@ namespace VolunteerBot
             bool holder;
             if (!context.UserData.TryGetValue<bool>("Seen", out holder))
             {
-                message = $"Hello! I am the FIRST WA Bot! I can help you volunteer or learn about FIRST!";
-            } else
-            {
-                message = $"Sorry I did not understand: " + result.Query + "\n It resulted in intents: " + string.Join(", ", result.Intents.Select(i => i.Intent));
+                context.UserData.SetValue<bool>("Seen", true);
+                message = $"Hello! I am the FIRST Washington Bot! Are you interested in helping out?";
+                PromptDialog.Confirm(context, ConfirmAddVolunteer, message);
             }
-            context.UserData.SetValue<bool>("Seen", true);
-            await context.PostAsync(message);
-            context.Wait(MessageReceived);
+            else
+            {
+                message = $"Sorry, I did not understand: \"{result.Query}\". I can help you volunteer with FIRST Washington Robotics, or tell you more about their programs.";
+
+                // Uncomment this to have the bot return debug information about ordering of intents when it doesn't understand an utterance
+                //message += $"\n It resulted in intents: {string.Join(", ", result.Intents.Select(i => i.Intent))}";
+                
+                await context.PostAsync(message);
+                context.Wait(MessageReceived);
+            }
         }
 
         [LuisIntent("GetHelp")]
         public async Task GetHelp(IDialogContext context, LuisResult result)
         {
             context.UserData.SetValue<bool>("Seen", true);
-            string message = $"I think you wanted to learn about this applicaication when you said: " + result.Query + $"Hello, I am The FIRST WA Bot! I can tell you about FIRST Washington Programs and opportunities";
+            string message = $"I can help you volunteer with FIRST Washington Robotics, or tell you more about FIRST Washington Robotics programs.";
             await context.PostAsync(message);
             context.Wait(MessageReceived);
         }
@@ -75,7 +94,7 @@ namespace VolunteerBot
         public async Task EndContact(IDialogContext context, LuisResult result)
         {
             context.UserData.RemoveValue("Seen");
-            string message = $"I think you wanted me to stop contacting you when you said: " + result.Query + ".\n";
+            string message = $"Okay, we won't contact you anymore.\n";
 
             Volunteer volunteer = null;
             int volunteerId;
@@ -95,7 +114,7 @@ namespace VolunteerBot
 
                         if (volunteer != null)
                         {
-                            PromptDialog.Confirm(context, DeleteContactInformation, message + $"Do you want your data for {volunteer.Email} removed from our system?");
+                            PromptDialog.Confirm(context, DeleteContactInformation, message + $"Do you also want your data for {volunteer.Email} removed from our system?");
                         }
                     }
                 }
@@ -167,19 +186,16 @@ namespace VolunteerBot
             string message;
 
             var entities = new List<EntityRecommendation>(result.Entities);
-            if (entities.Count > 1)
-            {
-                message = $"I'm sorry, I can only give you information on one thing at a time.";
-            }
-            else
+            if (entities.Count == 1)
             {
                 var entity = entities.ElementAt(0);
                 if (entity.Type.Equals("League"))
                 {
                     if(entity.Entity.Equals("leagues") || entity.Entity.Equals("programs"))
                     {
-                        message = $"FIRST has 4 programs for students (K-12).\nFIRST Robotics Competition(FRC) for grades 9 - 12.\nFIRST Tech Challenge(FTC) for grades 7 - 12.\nFIRST LEGO League(FLL) for grades 4 - 8. FIRST LEGO League Jr(FLLJr) for grades K-4) More info: http://www.firstinspires.org/";
-                    } else 
+                        message = $"FIRST has 4 programs for students (K-12).\nFIRST Robotics Competition (FRC) for grades 9 - 12.\nFIRST Tech Challenge (FTC) for grades 7 - 12.\nFIRST LEGO League (FLL) for grades 4 - 8. FIRST LEGO League Jr (FLL Jr) for grades K-4) More info: http://www.firstinspires.org/";
+                    }
+                    else 
                     {
                         bool found = false;
                         int i;
@@ -218,18 +234,25 @@ namespace VolunteerBot
                                     message = $"Internal code error occured. Try again.";
                                     break;
                             }
-                        } else
+                        }
+                        else
                         {
-                            message = $"I think that you wanted to learn more about " + entity.Entity + " when you said: " + result.Query;
+                            message = $"I think that you wanted to learn more about {entity.Entity} when you said: \"{result.Query}\", but I'm not smart enough to tell you more about that yet!";
                         }
                     }
-                } else if(entity.Type.Equals("Event"))
+                }
+                else if (entity.Type.Equals("Event"))
                 {
                     message = $"Competition events for FIRST Teams are found on the Calendar. Link: http://firstwa.org/Calendar";
-                } else
-                {
-                    message = $"I think you wanted to learn more about FIRST WA Programs when you said: " + result.Query;
                 }
+                else
+                {
+                    message = $"I think you wanted to learn more about FIRST WA Programs when you said: \"{result.Query}\", but I'm not smart enough to tell you more about that yet!";
+                }
+            }
+            else
+            {
+                message = $"I'm sorry, I'm not smart enough to tell you about that yet!";
             }
 
             await context.PostAsync(message);
@@ -245,7 +268,7 @@ namespace VolunteerBot
             }
             catch (OperationCanceledException)
             {
-                await context.PostAsync("Your response was canceled. If you'd like more information, reply what you'd like to learn about.");
+                await context.PostAsync("You cancelled out of the information gathering. If you'd like hear more about FIRST Washington first, let me know what you'd like me to tell you about.");
                 return;
             }
             if (form != null)
@@ -269,7 +292,7 @@ namespace VolunteerBot
                         if (outVolunteer != null)
                         {
                             context.UserData.SetValue<int>("VolunteerId", outVolunteer.Id);
-                            await context.PostAsync("Thank you for giving us your information. If you'd like more information, reply what you'd like to learn about.");
+                            await context.PostAsync("Thanks! One of our staff will get in touch with you over e-mail to walk you through the registration process soon. In the meantime, I can tell you more about our robotics programs.");
                         }
                         else
                         {
@@ -293,7 +316,7 @@ namespace VolunteerBot
         {
             if (await isAlreadyRegistered)
             {
-                await context.PostAsync("Great! How can I help you? I can tell you more about FIRST WA robotics, robotics leagues or volunteer roles.");
+                await context.PostAsync("Great! How can I help you? I can tell you more about FIRST WA robotics programs.");
                 context.Wait(MessageReceived);
             }
             else
@@ -361,12 +384,5 @@ namespace VolunteerBot
                 AddContactInformation(context);
             }
         }
-    }
-}
-public class Awaiter : IAwaitable<bool>
-{
-    public IAwaiter<bool> GetAwaiter()
-    {
-        throw new NotImplementedException();
     }
 }
