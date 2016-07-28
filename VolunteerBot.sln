@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolunteerDataWebApi", "Volu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LUIS", "LUIS", "{8268B29B-4A37-4A6B-9BB1-DA76CCDA0931}"
 	ProjectSection(SolutionItems) = preProject
-		LUIS\VolunteerOutreach.json = LUIS\VolunteerOutreach.json
+		LUIS\FIRSTVolunteerBot.json = LUIS\FIRSTVolunteerBot.json
 	EndProjectSection
 EndProject
 Global
