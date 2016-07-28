@@ -4,6 +4,6 @@ The VolunteerBot uses a language model powered by LUIS model for understanding u
 *To import the model:*
 1. Go to http://www.luis.ai and follow the instructions to create your account.
 2. On the [My Applications](https://www.luis.ai/applicationlist) page of your account, click **+New App** and select **Import Existing Application** from the drop down menu.
-3. Provide the path to the *VolunteerOutreach.json* file, and a name for your instance, then click **Import**.
+3. Provide the path to the *FIRSTVolunteerBot.json* file, and a name for your instance, then click **Import**.
 
 To get started on using and publishing your newly created LUIS app, refer to the [LUIS Tutorial](https://www.luis.ai/Help).

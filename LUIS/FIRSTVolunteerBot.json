@@ -1,0 +1,980 @@
+{
+  "luis_schema_version": "1.3.0",
+  "name": "FIRSTVolunteerBot",
+  "desc": "Language Model to provide users with information about FIRST (Washington) as to interest them in working with the program as a volunteer, mentor, or participant.",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "GetInformation"
+    },
+    {
+      "name": "GetHelp"
+    },
+    {
+      "name": "GetSignUp"
+    },
+    {
+      "name": "EndContact"
+    },
+    {
+      "name": "None"
+    }
+  ],
+  "entities": [
+    {
+      "name": "League"
+    },
+    {
+      "name": "Event"
+    },
+    {
+      "name": "Role"
+    }
+  ],
+  "composites": [],
+  "bing_entities": [],
+  "actions": [],
+  "model_features": [
+    {
+      "name": "FLL Acronym",
+      "mode": true,
+      "words": "fll,first lego league",
+      "activated": true
+    },
+    {
+      "name": "FTC Acronym",
+      "mode": true,
+      "words": "ftc,first tech challenge,first tech competition",
+      "activated": true
+    },
+    {
+      "name": "FRC Acronym",
+      "mode": true,
+      "words": "frc,first robotics competition,first robotics challenge",
+      "activated": true
+    },
+    {
+      "name": "FLLJr Acronym",
+      "mode": true,
+      "words": "FLLJr,JrFLL,First Lego League Junior,LEGO Junior",
+      "activated": true
+    }
+  ],
+  "regex_features": [
+    {
+      "name": "Junior",
+      "pattern": "jr\\w*",
+      "activated": true
+    },
+    {
+      "name": "Volunteer Mispelling",
+      "pattern": "volunt(e+)r",
+      "activated": true
+    }
+  ],
+  "utterances": [
+    {
+      "text": "what do you do?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "please stop sending me text messages.",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "how do i become a volunteer?",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "what programs does first washington have?",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "i like pineapple.",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "tell me about yourself?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "what is fll?",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "mom, how are you?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "tell me what you can do",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "i want to sign up to be a volunteer.",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "sign me iup",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "add me to the contact list",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "how can i get more information",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "i will voluteer",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "i would like to volunteer",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "how much time i need to dedicate",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "what are the upcoming events",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "don't bother me anymore",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "i am not interested to volunteer",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "remove me from your contact list",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "let me know the upcoming events",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "how do i sign-up",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "i am ready to sign up",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "what is the diffrence between volunteer and mentor",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "tell me more about mentorship",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "how can i help",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "i want to help",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "add me for future mentor opportunities",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "what are my commitments",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "what are my leagal obligations",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "what are upcoming events",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "tell me about timing of the events",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "what are the different projects",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "can i signup later",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "i am not sure if i am ready to signup",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "can i come visit an event",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "how this application works",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "tell me more",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "i would like to stop at this time",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "good bye",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "bye for now",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "bye bye bot",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "end bot",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "i do not understand",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "i am not clear",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "what can i do here",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "what can i do on this app",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "where do i signup",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "where do i sign-up",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "end session",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "end this chat",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "let me know where i can help",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "hello",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "any evenets coming up",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "any events coming up",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "stop contacting me",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "any events this week",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "events this weekend",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "hi",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "where am i",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "what i will be doing here",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "what is this app",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "what am i going to get here",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "i volunteer as tribute",
+      "intent": "GetSignUp",
+      "entities": [
+        {
+          "entity": "Role",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "not sure if i in the right place",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "what is bot",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "never used bot",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "hiya",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "don't bot me",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "i am lost",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "i am ready to volunteer",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "i would like to be a mentor",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "i am ready to signup",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "can't wait to signup",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "can't wait to volunteer",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "what are the event locations",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "any particular times you need more help",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "take me off the list",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "please execuse me for now",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "can i get paid",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "would i be compensated for my work",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "can i get a paid job",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "have to go for now",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "sorry i have to take off",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "can't continue at this time",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "i am in",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "i am excited to get started",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "prefer volunteering than mentoring",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "help me",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "forget me",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "tell me about ftc",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "tell me about frc",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "tell me about fll",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "tell me about the programs",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is susan",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "i want to work with a team",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "which events are happening soon",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "leave me be",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "how can i get more info",
+      "intent": "GetInformation",
+      "entities": []
+    },
+    {
+      "text": "my name is susan",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "tell me about first lego league",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 3,
+          "endPos": 3
+        },
+        {
+          "entity": "League",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "League",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "who are you?",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "i mean what is this app",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "are you there",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "stop bugging me",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "i will help",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "i'm ready to sign up",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "i'm ready to volunteer",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "howdy",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "hey",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "hey, what's up",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "ftc",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 0,
+          "endPos": 0
+        }
+      ]
+    },
+    {
+      "text": "👋",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "remove me please",
+      "intent": "EndContact",
+      "entities": []
+    },
+    {
+      "text": "tell me more about fll",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "goodbye",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "hi, interested in volunteering",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "tell me more about first lego league",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "League",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "League",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "tell me more about first tech challenge",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "League",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "League",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "tell me more about the leagues",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i want to volunteer as a mentor",
+      "intent": "GetSignUp",
+      "entities": [
+        {
+          "entity": "Role",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i want to volunteer as a judge",
+      "intent": "GetSignUp",
+      "entities": [
+        {
+          "entity": "Role",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i want to volunteer as tribute",
+      "intent": "GetSignUp",
+      "entities": [
+        {
+          "entity": "Role",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i want to volunteer as a referee",
+      "intent": "GetSignUp",
+      "entities": [
+        {
+          "entity": "Role",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i want to be a volunteer",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "volunteer",
+      "intent": "GetSignUp",
+      "entities": []
+    },
+    {
+      "text": "no",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "hell",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "yay",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "tell me about events",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "Event",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "what events are coming up?",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "Event",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "where is the next event",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "Event",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "what does fll mean",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "when are competitions?",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "Event",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "when is the kickoff?",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "Event",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "when is the next competition",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "Event",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "tell me about leagues",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "tell me about programs",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "tell me more about the robotics programs",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "tell me about flljr",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "flljr",
+      "intent": "GetInformation",
+      "entities": [
+        {
+          "entity": "League",
+          "startPos": 0,
+          "endPos": 0
+        }
+      ]
+    }
+  ]
+}
