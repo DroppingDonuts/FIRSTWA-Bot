@@ -265,49 +265,48 @@ namespace VolunteerBot
             try
             {
                 form = await result;
+                if (form != null)
+                {
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(volunteerDataBaseUri);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                        Volunteer newVolunteer = new Volunteer();
+                        newVolunteer.Email = form.EmailAddress;
+                        newVolunteer.Name = form.FullName;
+                        newVolunteer.PostalCode = form.ZipCode;
+                        newVolunteer.CanMessage = true;
+
+                        HttpResponseMessage response = await client.PostAsJsonAsync("api/volunteers", newVolunteer);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            Volunteer outVolunteer = await response.Content.ReadAsAsync<Volunteer>();
+                            if (outVolunteer != null)
+                            {
+                                context.UserData.SetValue<int>("VolunteerId", outVolunteer.Id);
+                                await context.PostAsync("Thanks! One of our staff will get in touch with you over e-mail to walk you through the registration process soon. In the meantime, I can tell you more about our robotics programs.");
+                            }
+                            else
+                            {
+                                await context.PostAsync("Failed to get volunteer ID that was added. Oops.");
+                            }
+                        }
+                        else
+                        {
+                            await context.PostAsync($"Sorry, we seem to have some problem saving your details right now. Could you try again later? (Error:{response.StatusCode})");
+                        }
+                    }
+                }
+                else
+                {
+                    await context.PostAsync("The form returned empty response!");
+                }
             }
             catch (OperationCanceledException)
             {
                 await context.PostAsync("You cancelled out of the information gathering. If you'd like hear more about FIRST Washington first, let me know what you'd like me to tell you about.");
-                return;
-            }
-            if (form != null)
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(volunteerDataBaseUri);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    Volunteer newVolunteer = new Volunteer();
-                    newVolunteer.Email = form.EmailAddress;
-                    newVolunteer.Name = form.FullName;
-                    newVolunteer.PostalCode = form.ZipCode;
-                    newVolunteer.CanMessage = true;
-
-                    HttpResponseMessage response = await client.PostAsJsonAsync("api/volunteers", newVolunteer);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Volunteer outVolunteer = await response.Content.ReadAsAsync<Volunteer>();
-                        if (outVolunteer != null)
-                        {
-                            context.UserData.SetValue<int>("VolunteerId", outVolunteer.Id);
-                            await context.PostAsync("Thanks! One of our staff will get in touch with you over e-mail to walk you through the registration process soon. In the meantime, I can tell you more about our robotics programs.");
-                        }
-                        else
-                        {
-                            await context.PostAsync("Failed to get volunteer ID that was added. Oops.");
-                        }
-                    }
-                    else
-                    {
-                        await context.PostAsync($"Sorry, we seem to have some problem saving your details right now. Could you try again later? (Error:{response.StatusCode})");
-                    }
-                }
-            }
-            else 
-            {
-                await context.PostAsync("The form returned empty response!");
             }
             context.Wait(MessageReceived);
         }
