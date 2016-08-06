@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Builder.Luis;
@@ -23,7 +22,7 @@ namespace VolunteerBot
     public class VolunteerOutreachDialog : LuisDialog<object>
     {
         private readonly BuildFormDelegate<VolunteerFormFlow> MakeVolunteerForm;
-        private readonly string volunteerDataBaseUri;
+        private static readonly string volunteerDataBaseUri = ConfigurationManager.AppSettings["app:VolunteerDataBaseUri"];
 
         private readonly string[][] leagueWords = new string[4][]
         {
@@ -40,8 +39,6 @@ namespace VolunteerBot
 
         public VolunteerOutreachDialog()
         {
-            var rootWebConfig = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~/");
-            this.volunteerDataBaseUri = rootWebConfig.AppSettings.Settings["VolunteerDataBaseUri"].Value;
         }
 
         private async Task ConfirmAddVolunteer(IDialogContext context, IAwaitable<bool> addVolunteer)
