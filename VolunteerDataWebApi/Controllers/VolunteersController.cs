@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -13,6 +11,7 @@ using VolunteerDataWebApi.Models;
 
 namespace VolunteerDataWebApi.Controllers
 {
+    [Authorize(Roles="volunteer_manager")]
     public class VolunteersController : ApiController
     {
         private VolunteerDataWebApiContext db = new VolunteerDataWebApiContext();
@@ -22,6 +21,7 @@ namespace VolunteerDataWebApi.Controllers
         /// Get all registered volunteer records.
         /// </summary>
         /// <returns>IQueryable of all registered volunteers.</returns>
+        [ResponseType(typeof(IQueryable<Volunteer>))]
         public IQueryable<Volunteer> GetVolunteers()
         {
             return db.Volunteers;

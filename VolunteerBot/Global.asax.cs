@@ -12,6 +12,7 @@ namespace VolunteerBot
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            Authenticator.Configure();
         }
     }
 }

@@ -103,6 +103,8 @@ namespace VolunteerBot
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
+                    await Authenticator.AddAccessTokenToRequest(client);
+
                     HttpResponseMessage response = await client.GetAsync($"api/volunteers/{volunteerId}");
                     if (response.IsSuccessStatusCode)
                     {
@@ -132,6 +134,8 @@ namespace VolunteerBot
                 client.BaseAddress = new Uri(volunteerDataBaseUri);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                await Authenticator.AddAccessTokenToRequest(client);
 
                 if (context.UserData.TryGetValue<int>("VolunteerId", out volunteerId))
                 {
@@ -276,6 +280,8 @@ namespace VolunteerBot
                         newVolunteer.PostalCode = form.ZipCode;
                         newVolunteer.CanMessage = true;
 
+                        await Authenticator.AddAccessTokenToRequest(client);
+
                         HttpResponseMessage response = await client.PostAsJsonAsync("api/volunteers", newVolunteer);
                         if (response.IsSuccessStatusCode)
                         {
@@ -349,6 +355,8 @@ namespace VolunteerBot
                     client.BaseAddress = new Uri(volunteerDataBaseUri);
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    await Authenticator.AddAccessTokenToRequest(client);
 
                     HttpResponseMessage response = await client.GetAsync($"api/volunteers/{volunteerId}");
                     if (response.IsSuccessStatusCode)
